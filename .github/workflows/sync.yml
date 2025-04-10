@@ -36,3 +36,4 @@ jobs:
         with:
           name: synced-log
           path: synced.log
+        continue-on-error: true  # 避免首次运行时出错
