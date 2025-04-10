@@ -23,7 +23,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: synced.log
-          key: synced-log
+          key: synced-log-${{ github.run_id }}
+          restore-keys: |
+            synced-log-
         continue-on-error: true  # 避免首次运行时出错
 
       - name: Run sync script
@@ -35,5 +37,5 @@ jobs:
       - name: Save synced.log to cache
         uses: actions/cache@v4  
         with:
-          name: synced-log
           path: synced.log
+          key: synced-log-${{ github.run_id }}
