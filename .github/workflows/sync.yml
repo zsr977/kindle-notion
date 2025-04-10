@@ -1,9 +1,9 @@
 name: Sync Kindle Clippings to Notion
 
 on:
-  schedule:
+  # schedule:
     # 每小时执行一次
-    - cron: '0 * * * *'
+    # - cron: '0 * * * *'
   workflow_dispatch: # 手动触发
 
 jobs:
