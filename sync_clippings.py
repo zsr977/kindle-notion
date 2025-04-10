@@ -4,11 +4,15 @@ import re
 from typing import List, Dict
 from datetime import datetime
 import pytz  # 用于处理时区
+import os
+import hashlib
 
 NOTION_TOKEN = "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"
 NOTION_DATABASE_ID = "1d0b7f6b184c80eb99bdc23049a72cf4"
 CLIPPINGS_FILE = "MyClippings.txt"
-SYNCED_LOG = "synced.log"  # 用于记录已同步的笔记避免重复
+# SYNCED_LOG = "synced.log"  # 用于记录已同步的笔记避免重复
+SYNCED_LOG_DIR = "logs"
+SYNCED_LOG_PATH = os.path.join(SYNCED_LOG_DIR, "synced.log")
 
 HEADERS = {
     "Authorization": f"Bearer {NOTION_TOKEN}",
@@ -105,14 +109,25 @@ def convert_to_iso_format(time_str: str) -> str:
         print(f"⚠️ 无法解析时间字符串: '{time_str}'，错误: {e}")
         return ""
 
+def ensure_log_file_exists():
+    if not os.path.exists(SYNCED_LOG_DIR):
+        os.makedirs(SYNCED_LOG_DIR)
+    if not os.path.exists(SYNCED_LOG_PATH):
+        with open(SYNCED_LOG_PATH, 'w') as f:
+            pass  # 创建空文件
+
+def hash_note(note: Dict) -> str:
+    key = f"{note['title']}_{note['location']}_{note['content']}"
+    return hashlib.md5(key.encode("utf-8")).hexdigest()
+
 def is_already_synced(note_hash: str) -> bool:
-    if not os.path.exists(SYNCED_LOG):
-        return False
-    with open(SYNCED_LOG, 'r') as f:
+    ensure_log_file_exists()
+    with open(SYNCED_LOG_PATH, 'r') as f:
         return note_hash in f.read()
 
 def mark_as_synced(note_hash: str):
-    with open(SYNCED_LOG, 'a') as f:
+    ensure_log_file_exists()
+    with open(SYNCED_LOG_PATH, 'a') as f:
         f.write(note_hash + '\n')
 
 def upload_to_notion(note: Dict):
@@ -155,7 +170,7 @@ def upload_to_notion(note: Dict):
 def main():
     notes = parse_clippings(CLIPPINGS_FILE)
     for note in notes:
-        note_hash = f"{note['title']}_{note['location']}".replace(" ", "_")
+        note_hash = hash_note(note)
         if is_already_synced(note_hash):
             continue
         upload_to_notion(note)
