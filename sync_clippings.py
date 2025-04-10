@@ -5,8 +5,8 @@ from typing import List, Dict
 from datetime import datetime
 import pytz  # 用于处理时区
 
-NOTION_TOKEN = "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"
-NOTION_DATABASE_ID = "1d0b7f6b184c80eb99bdc23049a72cf4"
+NOTION_TOKEN = os.getenv("NOTION_TOKEN")
+NOTION_DATABASE_ID = os.getenv("NOTION_DATABASE_ID")
 CLIPPINGS_FILE = "MyClippings.txt"
 SYNCED_LOG = "synced.log"  # 用于记录已同步的笔记避免重复
 
