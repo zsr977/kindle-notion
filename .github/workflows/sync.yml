@@ -1,32 +1,38 @@
-name: Sync Kindle Clippings to Notion
+name: Sync Kindle Clippings
 
 on:
-  # schedule:
-    # 每小时执行一次
-    # - cron: '0 * * * *'
-  workflow_dispatch: # 手动触发
+#  schedule:
+#    - cron: '0 2 * * *'  # 每天凌晨 2 点运行
+  workflow_dispatch:
 
 jobs:
-  sync_clippings:
+  sync:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'  # 你可以选择任意的 Python 版本
+          python-version: '3.9'
 
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests pytz
+        run: pip install requests pytz
 
-      - name: Run the script
-        run: |
-          python sync_clippings.py  # 运行你的脚本
+      - name: Restore synced.log
+        uses: actions/download-artifact@v4
+        with:
+          name: synced-log
+          path: .
+
+      - name: Run sync script
+        run: python sync_clippings.py
         env:
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}  # GitHub Secrets 用于存储 Notion Token
-          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}  # GitHub Secrets 用于存储 Notion Database ID
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+
+      - name: Save synced.log
+        uses: actions/upload-artifact@v4
+        with:
+          name: synced-log
+          path: synced.log
