@@ -24,6 +24,7 @@ jobs:
         with:
           name: synced-log
           path: .
+        continue-on-error: true  # 避免首次运行时出错
 
       - name: Run sync script
         run: python sync_clippings.py
@@ -36,4 +37,3 @@ jobs:
         with:
           name: synced-log
           path: synced.log
-        continue-on-error: true  # 避免首次运行时出错
