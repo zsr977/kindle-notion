@@ -7,7 +7,7 @@ import pytz  # 用于处理时区
 
 NOTION_TOKEN = os.getenv("NOTION_TOKEN")
 NOTION_DATABASE_ID = os.getenv("NOTION_DATABASE_ID")
-CLIPPINGS_FILE = "MyClippings.txt"
+CLIPPINGS_FILE = "My Clippings.txt"
 SYNCED_LOG = "synced.log"  # 用于记录已同步的笔记避免重复
 
 HEADERS = {
@@ -155,7 +155,7 @@ def upload_to_notion(note: Dict):
 def main():
     notes = parse_clippings(CLIPPINGS_FILE)
     for note in notes:
-        note_hash = f"{note['title']}_{note['location']}".replace(" ", "_")
+        note_hash = f"{note['title']}_{note['location']}_{note['content']}".replace(" ", "_")
         if is_already_synced(note_hash):
             continue
         upload_to_notion(note)
