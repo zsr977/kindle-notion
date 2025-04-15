@@ -19,7 +19,7 @@ HEADERS = {
 # 正则表达式，用于提取位置和时间
 location_pattern = r"位置 #(\d+-\d+)"
 time_pattern = r"添加于\s+([\d]{4}年[\d]{1,2}月[\d]{1,2}日星期[\u4e00-\u9fa5]+\s+(上午|下午)?\d{1,2}:\d{2}:\d{2})"
-weekday_pattern = r"星期[一-七]"
+# weekday_pattern = r"星期[一-七]"
 
 def parse_clippings(file_path: str) -> List[Dict]:
     with open(file_path, 'r', encoding='utf-8-sig') as f:
@@ -68,7 +68,7 @@ def convert_to_iso_format(time_str: str) -> str:
             return ""
 
         # 去除“星期”部分，并确保去掉多余空格
-        time_str = re.sub(r"星期[一二三四五六七]", "", time_str).strip()
+        time_str = re.sub(r"星期[一二三四五六日]", "", time_str).strip()
 
         # 正则匹配时间部分，考虑上午/下午时间转换
         match = re.search(r"(上午|下午)?(\d{1,2}):(\d{2}):(\d{2})", time_str)
